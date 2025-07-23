@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public GameObject player_Object;
+    public Player player;
+
     void Start()
     {
-        
+        // Player GameObject에 붙어있는 Player 컴포넌트를 가져옵니다.
+        player = player_Object.GetComponent<Player>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        player.OnMove();
     }
 }

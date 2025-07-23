@@ -2,17 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Iclothes : MonoBehaviour
+public interface IClothes
 {
-    // Start is called before the first frame update
-    void Start()
+    public void WearClothes()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
