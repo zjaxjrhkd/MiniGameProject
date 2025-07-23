@@ -1,5 +1,5 @@
 ---
-name: enhance
+name: "[enhance]"
 about: 개선이 필요한 부분 적기
 title: "[enhance]"
 labels: enhancement
