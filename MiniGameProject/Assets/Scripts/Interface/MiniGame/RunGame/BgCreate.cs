@@ -26,12 +26,6 @@ public class BgCreate : MonoBehaviour
 
     }
 
-    void Update()
-    {
-        BGMove();
-        ChangeLayerPrefabPositionAll();
-    }
-
     public void BGMove()
     {
         for (int layerIdx = 0; layerIdx < layers.Count; layerIdx++)
@@ -62,5 +56,10 @@ public class BgCreate : MonoBehaviour
                 layer[2] = obj1;
             }
         }
+    }
+    public void MapLoop()
+    {
+        BGMove();
+        ChangeLayerPrefabPositionAll();
     }
 }
