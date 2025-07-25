@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
+  - Obstacle
+  - BackWall
+  - Building1
+  - Building2
+  - Block
   layers:
   - Default
   - TransparentFX

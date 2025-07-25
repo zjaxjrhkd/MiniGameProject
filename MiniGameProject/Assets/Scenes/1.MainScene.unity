@@ -690,7 +690,7 @@ GameObject:
   - component: {fileID: 877896903}
   m_Layer: 0
   m_Name: Buildng
-  m_TagString: Untagged
+  m_TagString: Building1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1028,7 +1028,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1, y: 2}
   m_EdgeRadius: 0
 --- !u!50 &877896902
 Rigidbody2D:
@@ -9766,6 +9766,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3816245078396003979, guid: 1c2db89bdef640a41b86cc3c190e277f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4169133401673784667, guid: 1c2db89bdef640a41b86cc3c190e277f, type: 3}
+      propertyPath: m_GravityScale
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
