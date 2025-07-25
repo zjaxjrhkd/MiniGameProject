@@ -28,7 +28,7 @@ public class RunGame : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SetGame();
+        InitGame();
         StartGame();
     }
 
@@ -38,8 +38,10 @@ public class RunGame : MonoBehaviour
         switch (gameState)
         {
             case GameState.Stop:
+                SetGame();
                 break;
             case GameState.Ready:
+                StartGame();
                 break;
             case GameState.Playing:
                 PlayLoop();
@@ -48,13 +50,20 @@ public class RunGame : MonoBehaviour
                 break;
         }
     }
-    public void SetGame()
+    public void InitGame()
     {
         gameState = GameState.Ready;
         bgCreate = bg_Object.GetComponent<BgCreate>();
         player = player_Object.GetComponent<Player>();
         itemCreate = GetComponent<ItemCreate>();
     }
+    public void SetGame()
+    {
+        UIManager_Run.Instance.ResetTimer();
+        itemCreate.ClearPattern();
+        gameState = GameState.Ready;
+    }
+    
     public void StartGame()
     {
         player.OnRunGame();
@@ -150,6 +159,12 @@ public class RunGame : MonoBehaviour
     {
         player.playerGameMode = Player.PlayerGameMode.Map;
         SceneManager.LoadScene("1.MainScene");
+    }
+    public void OnStageSelectButton()
+    {
+        UIManager_Run.Instance.stageUI.SetActive(true);
+        UIManager_Run.Instance.inGameUI.SetActive(false);
+        gameState = GameState.Stop;
     }
 
 }

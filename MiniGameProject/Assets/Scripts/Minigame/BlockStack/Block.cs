@@ -1,18 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Block;
+using static BlockCreater;
 
 public class Block : MonoBehaviour
 {
-    public float speed = 3f;
-    public float xMin = -9f;
-    public float xMax = 9f;
-    public float y = 7f;
+    public enum BlockType
+    {
+        set,
+        ready,
+        stay,
+    }
+    private float speed = 10f;
+    private float xMin = -9f;
+    private float xMax = 9f;
+    private float y = 6f;
     bool isMoving = true;
+    public BlockType blockType = BlockType.ready;
+    public Collider2D col;
 
     void Start()
     {
-        
+        col = GetComponent<Collider2D>();
+        col.isTrigger = true;
     }
 
     // Update is called once per frame
@@ -22,12 +33,13 @@ public class Block : MonoBehaviour
         {
             MoveBlock();
         }
-        if (Input.GetKeyDown(KeyCode.X))
+        if (Input.GetKeyDown(KeyCode.X)&& isMoving)
         {
             StopMoving();
-        }
-    }
 
+        }
+
+    }
 
     public void MoveBlock()
     {
@@ -41,13 +53,33 @@ public class Block : MonoBehaviour
     public void StopMoving()
     {
         isMoving = false;
+        col.isTrigger = false;
+        blockType = BlockType.set;
     }
 
     public void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.CompareTag("Block"))
+        if(collision.gameObject.CompareTag("Block")&& (blockType==BlockType.set))
         {
+            blockType = BlockType.stay;
             BlockCreater.Instance.BlockDownCheck();
+            UIManager_Block.Instance.StartComboTimer();
+        }
+        else if (collision.gameObject.CompareTag("BackWall"))
+        {
+            blockType = BlockType.stay;
+            UIManager_Block.Instance.ClearCombo();
+            UIManager_Block.Instance.TakeHeart();
+            Destroy(gameObject);
         }
     }
+    public void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Block") && blockType == BlockType.ready)
+        {
+            UIManager_Block.Instance.isWin = true;
+        }
+    }
+
+
 }

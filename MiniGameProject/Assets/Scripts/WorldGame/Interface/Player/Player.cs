@@ -67,6 +67,10 @@ public class Player : MonoBehaviour, IMove, IClothes
     {   
         playerGameMode = PlayerGameMode.Run;
     }
+    public void OnBlockStackGame()
+    {
+        playerGameMode = PlayerGameMode.StackBlock;
+    }
 
     public void MapMove()
     { 
@@ -128,10 +132,23 @@ public class Player : MonoBehaviour, IMove, IClothes
     }
     public void OnTriggerStay2D(Collider2D other)
     {
-        if (other.CompareTag("Building1") && (Input.GetKeyDown(KeyCode.X)))
+        Debug.Log("OnTriggerStay2D: " + other.gameObject.name);
+        if (other.CompareTag("Building1") )
         {
-            Debug.Log("Building1 Triggered");
-            SceneManager.LoadScene("2.RunScene");
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                Debug.Log("Building1 Triggered");
+                SceneManager.LoadScene("2.RunScene");
+            }
+        }
+        else if (other.CompareTag("Building2"))
+        {
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                Debug.Log("Building2 Triggered");
+                SceneManager.LoadScene("3.StackScene");
+            }
+            
         }
     }
 

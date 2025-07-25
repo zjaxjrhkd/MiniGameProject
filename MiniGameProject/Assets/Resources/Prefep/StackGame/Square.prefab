@@ -99,10 +99,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01e933913e089c047a2e4dc0549a5ee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
-  xMin: -9
-  xMax: 9
-  y: 7
+  blockType: 1
+  col: {fileID: 0}
 --- !u!50 &2243912137489505346
 Rigidbody2D:
   serializedVersion: 4
@@ -118,8 +116,8 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_GravityScale: 0.5
+  m_Material: {fileID: 6200000, guid: e3d3b83fb8b88e249bbfe9e0d863c01a, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

@@ -10,7 +10,17 @@ public class ItemCreate : MonoBehaviour
 
     public List<GameObject> jumpPrefabs;
 
-
+    public void ClearPattern()
+    {         
+        foreach (var obj in jumpPrefabs)
+        {
+            if (obj != null)
+            {
+                Destroy(obj);
+            }
+        }
+        jumpPrefabs.Clear();
+    }
 
     public void SetPattern(int stageInfo)
     {

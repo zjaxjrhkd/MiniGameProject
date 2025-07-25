@@ -12,7 +12,7 @@ public class UIManager_Run : MonoBehaviour
     public Text ResultText;
     public Text GetCoinText;
     public Text timer;
-    public float time = 5f;
+    public float time = 30f;
     public GameObject[] hearts;
     public int coinCount = 0;
     public Text coinText;
@@ -79,5 +79,10 @@ public class UIManager_Run : MonoBehaviour
         resultUI.SetActive(true);
         ResultText.text = "Stage fail!";
         GetCoinText.text = "Get Half Coin: " + (coinCount/2).ToString();
+    }
+    public void ResetTimer()
+    {
+        time = 30f;
+        timer.text = time.ToString("F2");
     }
 }
