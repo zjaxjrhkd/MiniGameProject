@@ -3,7 +3,17 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Ground
+  - Obstacle
+  - BackWall
+  - Building1
+  - Building2
+  - Block
+  - NPC
+  - Effect
+  - Object
+  - ReaderBoard
   layers:
   - Default
   - TransparentFX
