@@ -1,11 +1,7 @@
-using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
-using UnityEditor.SearchService;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+
 
 public class Player : MonoBehaviour, IMove, IClothes
 {
@@ -23,15 +19,38 @@ public class Player : MonoBehaviour, IMove, IClothes
         Run,
         None
     }
+    public Animator animator;
+
+    public static Player Instance { get; private set; }
+
     private bool isGrounded = true;
     public PlayerState playerState = PlayerState.Idle;
     public PlayerGameMode playerGameMode = PlayerGameMode.None;
 
     private float _moveSpeed = 5f;
-    public float jumpPower = 30f;
+    public float jumpPower = 30;
     private Vector2 _movementDirection;
-    private Rigidbody2D rb;
+    public Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
+    public bool isLoad = false;
+
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
     public Vector2 movementDirection
     {
         get { return _movementDirection; }
@@ -44,9 +63,11 @@ public class Player : MonoBehaviour, IMove, IClothes
     }
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
 
+    }
+    void Update()
+    {
+        isMoveAni();
     }
     public void OnMove()
     {
@@ -58,6 +79,9 @@ public class Player : MonoBehaviour, IMove, IClothes
             case PlayerGameMode.Run:
                 RunMove();
                 break;
+            case PlayerGameMode.Map:
+                MapMove();
+                break;
             default:
                 MapMove();
                 break;
@@ -66,6 +90,7 @@ public class Player : MonoBehaviour, IMove, IClothes
     public void OnRunGame()
     {   
         playerGameMode = PlayerGameMode.Run;
+        rb.gravityScale = 10.0f;
     }
     public void OnBlockStackGame()
     {
@@ -79,11 +104,37 @@ public class Player : MonoBehaviour, IMove, IClothes
         movementDirection = new Vector2(horizontal, vertical).normalized;
         transform.position += new Vector3(movementDirection.x, movementDirection.y, 0) * MoveSpeed * Time.deltaTime;
     }
+    
 
+    public void isMoveAni()
+    {
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
 
+        if (horizontal != 0 || vertical != 0)
+        {
+            playerState = PlayerState.Walking;
+            animator.SetBool("isMove", true);
+        }
+        else
+        {
+            playerState = PlayerState.Idle;
+            animator.SetBool("isMove", false);
+        }
+
+        if (horizontal < 0)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
+        else if (horizontal > 0)
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+    }
 
     public void RunMove()
     {
+
         float horizontal = Input.GetAxisRaw("Horizontal");
         movementDirection = new Vector2(horizontal, 0).normalized;
         rb.velocity = new Vector2(movementDirection.x * _moveSpeed, rb.velocity.y);
@@ -126,29 +177,43 @@ public class Player : MonoBehaviour, IMove, IClothes
                         StartCoroutine(BlinkSprite(1f, 0.1f));
                 }
                 break;
+            case PlayerGameMode.Map:
+                switch (other.gameObject.tag)
+                {
+                    case "Building1":
+                        UIManager_World.Instance.OnStartGameUI("Building1");
+                        break;
+                    case "Building2":
+                        UIManager_World.Instance.OnStartGameUI("Building2");
+                        break;
+                    case "ReaderBoard":
+                        UIManager_World.Instance.OnReaderBoard();
+                        break;
+                    case "NPC":
+                        UIManager_World.Instance.OnOpenShop();
+                        break;
+                }
+                break;
             default:
                 break;
         }
     }
-    public void OnTriggerStay2D(Collider2D other)
+    public void OnTriggerExit2D(Collider2D other)
     {
-        Debug.Log("OnTriggerStay2D: " + other.gameObject.name);
-        if (other.CompareTag("Building1") )
+        switch (other.gameObject.tag)
         {
-            if (Input.GetKeyDown(KeyCode.X))
-            {
-                Debug.Log("Building1 Triggered");
-                SceneManager.LoadScene("2.RunScene");
-            }
-        }
-        else if (other.CompareTag("Building2"))
-        {
-            if (Input.GetKeyDown(KeyCode.X))
-            {
-                Debug.Log("Building2 Triggered");
-                SceneManager.LoadScene("3.StackScene");
-            }
-            
+            case "Building1":
+                UIManager_World.Instance.OnStartGameUI("Building1");
+                break;
+            case "Building2":
+                UIManager_World.Instance.OnStartGameUI("Building2");
+                break;
+            case "ReaderBoard":
+                UIManager_World.Instance.OnReaderBoard();
+                break;
+            case "NPC":
+                UIManager_World.Instance.OnOpenShop();
+                break;
         }
     }
 
@@ -167,9 +232,58 @@ public class Player : MonoBehaviour, IMove, IClothes
         spriteRenderer.enabled = true; 
     }
 
-    void OnClothesChange()
+    public void OnClothesChange(Dictionary<string, string> clothesDict)
     {
-        // Implement clothes change logic here
-        Debug.Log("Player's clothes have changed");
+        foreach (var kvp in clothesDict)
+        {
+            string partTag = kvp.Key;      // 부위 ("Object", "sprite", "Effect")
+            string spriteName = kvp.Value; // 변경할 스프라이트 이름
+            string resourcePath = "";
+
+            // 부위별 경로 지정
+            switch (partTag)
+            {
+                case "Object":
+                    resourcePath = $"Image/Character/Object/{spriteName}";
+                    break;
+                case "Sprite":
+                    resourcePath = $"Image/Character/Sprite/{spriteName}";
+                    partTag = "Player";
+                    break;
+                case "Effect":
+                    resourcePath = $"Image/Character/Effect/{spriteName}";
+                    break;
+                default:
+                    resourcePath = spriteName;
+                    break;
+            }
+            if (partTag == "Player")
+            {
+                var newController = Resources.Load<RuntimeAnimatorController>($"Ani/{spriteName}");
+                animator.runtimeAnimatorController = newController;
+            }
+            else
+            {
+                foreach (Transform child in transform)
+                {
+                    if (child.CompareTag(partTag))
+                    {
+                        SpriteRenderer sr = child.GetComponent<SpriteRenderer>();
+                        if (sr != null)
+                        {
+                            Sprite newSprite = Resources.Load<Sprite>(resourcePath);
+                            if (newSprite != null)
+                            {
+                                sr.sprite = newSprite;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"스프라이트를 찾을 수 없습니다: {resourcePath}");
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

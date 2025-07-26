@@ -78,11 +78,15 @@ public class UIManager_Run : MonoBehaviour
     {
         resultUI.SetActive(true);
         ResultText.text = "Stage fail!";
-        GetCoinText.text = "Get Half Coin: " + (coinCount/2).ToString();
+        GetCoinText.text = "Get Half Coin: " + (coinCount).ToString();
     }
     public void ResetTimer()
     {
         time = 30f;
         timer.text = time.ToString("F2");
+    }
+    public void DeadCost()
+    {
+        coinCount /= 2;
     }
 }

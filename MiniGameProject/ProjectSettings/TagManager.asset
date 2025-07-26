@@ -10,6 +10,10 @@ TagManager:
   - Building1
   - Building2
   - Block
+  - NPC
+  - Effect
+  - Object
+  - ReaderBoard
   layers:
   - Default
   - TransparentFX

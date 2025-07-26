@@ -137,6 +137,10 @@ public class UIManager_Block : MonoBehaviour
     {
         resultUI.SetActive(true);
         ResultText.text = "Stage fail!";
-        GetCoinTextResult.text = "Get Half Coin: " + (coinCount / 2).ToString();
+        GetCoinTextResult.text = "Get Half Coin: " + (coinCount).ToString();
+    }
+    public void DeadCost()
+    {
+        coinCount /= 2;
     }
 }

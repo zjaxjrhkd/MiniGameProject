@@ -34,7 +34,7 @@ public class BlockCreater : MonoBehaviour
     public void CreateCheck()
     {
         createTimer += Time.deltaTime;
-        if (createTimer >= 5.0f)
+        if (createTimer >= 10.0f)
         {
             UIManager_Block.Instance.UpdateHelp();
             createTimer = 0.0f;

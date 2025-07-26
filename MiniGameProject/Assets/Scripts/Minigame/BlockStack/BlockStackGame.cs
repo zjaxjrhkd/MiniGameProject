@@ -14,6 +14,7 @@ public class BlockStackGame : MonoBehaviour
     private float xMax = 9f;
     private float y = -10f;
     public int stageNum = 1;
+    private PlayerData playerData;
     public enum GameState
     {
         Stop,
@@ -51,8 +52,12 @@ public class BlockStackGame : MonoBehaviour
     public void SetGame()
     {
         blockCreater = gameObject.GetComponent<BlockCreater>();
+        player_Object = GameObject.FindGameObjectWithTag("Player");
+        player_Object.transform.position = new Vector3(14f, -10f, 0f);
         player = player_Object.GetComponent<Player>();
+        playerData = player_Object.GetComponent<PlayerData>();
         gameState = GameState.Ready;
+
     }
     public void StartGame()
     {
@@ -87,18 +92,23 @@ public class BlockStackGame : MonoBehaviour
         {
             gameState = GameState.End;
             UIManager_Block.Instance.ShowfailText_Block();
+            UIManager_Run.Instance.DeadCost();
+            GameSave();
 
         }
         else if (!UIManager_Block.Instance.hearts[2].activeSelf)
         {
             gameState = GameState.End;
             UIManager_Block.Instance.ShowfailText_Block();
+            UIManager_Block.Instance.DeadCost();
+            GameSave();
 
         }
         else if(UIManager_Block.Instance.isWin)
         {
             gameState = GameState.End;
             UIManager_Block.Instance.ShowClearText_Block();
+            GameSave();
         }
     }
 
@@ -150,6 +160,7 @@ public class BlockStackGame : MonoBehaviour
     public void OnBackButton()
     {
         player.playerGameMode = Player.PlayerGameMode.Map;
+        player.rb.gravityScale = 0f;
         SceneManager.LoadScene("1.MainScene");
     }
     public void OnStageSelectButton()
@@ -157,5 +168,17 @@ public class BlockStackGame : MonoBehaviour
         UIManager_Block.Instance.stageUI.SetActive(true);
         UIManager_Block.Instance.inGameUI.SetActive(false);
         gameState = GameState.Stop;
+    }
+    public void GameSave()
+    {
+        int newScore = UIManager_Block.Instance.coinCount;
+        int prevScore = 0;
+        playerData.PlayerGameScore.TryGetValue("BlockStack", out prevScore);
+        Debug.Log(newScore + " " + prevScore);
+
+        if (newScore > prevScore)
+        {
+            playerData.PlayerGameScore["BlockStack"] = newScore;
+        }
     }
 }

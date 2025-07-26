@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -23,16 +22,15 @@ public class RunGame : MonoBehaviour
     public GameObject player_Object;
     private ItemCreate itemCreate;
     private int stageNum = 0;
-    private int TargetGold = 300; 
+    private int TargetGold = 300;
+    private PlayerData playerData;
 
-    // Start is called before the first frame update
     void Start()
     {
         InitGame();
         StartGame();
     }
 
-    // Update is called once per frame
     void Update()
     {
         switch (gameState)
@@ -54,8 +52,11 @@ public class RunGame : MonoBehaviour
     {
         gameState = GameState.Ready;
         bgCreate = bg_Object.GetComponent<BgCreate>();
+        player_Object = GameObject.FindGameObjectWithTag("Player");
+        player_Object.transform.position = new Vector3(-8f, -4f, 0f);
         player = player_Object.GetComponent<Player>();
         itemCreate = GetComponent<ItemCreate>();
+        playerData = player_Object.GetComponent<PlayerData>();
     }
     public void SetGame()
     {
@@ -84,10 +85,12 @@ public class RunGame : MonoBehaviour
     {
         if (!UIManager_Run.Instance.hearts[2].activeSelf)
         {
+            UIManager_Run.Instance.DeadCost();
             UIManager_Run.Instance.ShowfailText();
             itemCreate.ResetPatternJumpPositions();
             gameState = GameState.End;
             itemCreate.PatternOffJump();
+            GameSave();
         }
         else if (UIManager_Run.Instance.time<=0)
         {
@@ -97,11 +100,13 @@ public class RunGame : MonoBehaviour
             }
             else
             {
+                UIManager_Run.Instance.DeadCost();
                 UIManager_Run.Instance.ShowfailText();
             }
             itemCreate.ResetPatternJumpPositions();
             gameState = GameState.End;
             itemCreate.PatternOffJump();
+            GameSave();
         }
     }
 
@@ -158,6 +163,7 @@ public class RunGame : MonoBehaviour
     public void OnBackButton()
     {
         player.playerGameMode = Player.PlayerGameMode.Map;
+        player.rb.gravityScale = 0f;
         SceneManager.LoadScene("1.MainScene");
     }
     public void OnStageSelectButton()
@@ -167,4 +173,15 @@ public class RunGame : MonoBehaviour
         gameState = GameState.Stop;
     }
 
+    public void GameSave()
+    {
+        int newScore = UIManager_Run.Instance.coinCount;
+        int prevScore = 0;
+        playerData.PlayerGameScore.TryGetValue("Run", out prevScore);
+        Debug.Log(newScore + " " + prevScore);
+        if (newScore > prevScore)
+        {
+            playerData.PlayerGameScore["Run"] = newScore;
+        }
+    }
 }
